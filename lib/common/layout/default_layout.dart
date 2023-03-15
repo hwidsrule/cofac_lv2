@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class DefalutLayout extends StatelessWidget {
+  final Color? backgroundColor;
   final Widget child;
 
   const DefalutLayout({
+    this.backgroundColor,
     required this.child,
     Key? key,
   }) : super(key: key);
@@ -11,7 +13,8 @@ class DefalutLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor ?? Colors.white,
+      // resizeToAvoidBottomInset: false,
       body: child,
     );
   }
