@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefalutLayout(
+    return DefaultLayout(
       backgroundColor: PRIMARY_COLOR,
       child: SizedBox(
         width: MediaQuery.of(context).size.width,

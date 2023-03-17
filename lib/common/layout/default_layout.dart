@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class DefalutLayout extends StatelessWidget {
+class DefaultLayout extends StatelessWidget {
   final Color? backgroundColor;
   final Widget child;
   final String? title;
   final Widget? bottomNavigationBar;
 
-  const DefalutLayout({
+  const DefaultLayout({
     this.backgroundColor,
     required this.child,
     this.title,
@@ -40,7 +40,7 @@ class DefalutLayout extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         centerTitle: true,
       );
     }

@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final dio = Dio();
 
-    return DefalutLayout(
+    return DefaultLayout(
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
@@ -91,8 +91,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     await storage.write(
                         key: ACCESS_TOKEN_KEY, value: accessToken);
 
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => RootTab()));
+                    // Navigator.of(context)
+                    //   .push(MaterialPageRoute(builder: (_) => RootTab()));
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => RootTab()),
+                        (route) => false);
                     // print(resp.data);
                   },
                   child: Text('로그인'),
