@@ -1,10 +1,15 @@
 import 'package:cofac_lv2/common/view/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:my_delivery/common/component/custom_text_form_field.dart';
 // import 'package:my_delivery/user/view/login_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ProviderScope(
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

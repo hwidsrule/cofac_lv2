@@ -1,110 +1,83 @@
-import 'package:cofac_lv2/common/dio/dio.dart';
+import 'package:cofac_lv2/common/model/cursor_pagination_model.dart';
+import 'package:cofac_lv2/restaurant/provider/restaurant_provider.dart';
 import 'package:cofac_lv2/restaurant/repository/restaurant_repository.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:cofac_lv2/common/const/data.dart';
 import 'package:cofac_lv2/restaurant/component/restaurant_card.dart';
 import 'package:cofac_lv2/restaurant/model/restaurant_model.dart';
 import 'package:cofac_lv2/restaurant/view/restaurant_detail_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends StatelessWidget {
+class RestaurantScreen extends ConsumerStatefulWidget {
   const RestaurantScreen({super.key});
 
-  Future<List<RestaurantModel>> paginateRestaurant() async {
-    final dio = Dio();
+  @override
+  ConsumerState<RestaurantScreen> createState() => _RestaurantScreenState();
+}
 
-    dio.interceptors.add(CustomInterceptor(storage: storage));
+class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
+  ScrollController controller = ScrollController();
 
-    // final repository =
-    //     RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
+  @override
+  void initState() {
+    super.initState();
 
-    // final resp = await repository.paginate();
+    controller.addListener(scrollListener);
+  }
 
-    // return resp.data;
-
-    final resp =
-        await RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant')
-            .paginate();
-
-    return resp.data;
-
-    // String? accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-
-    // final resp = await dio.get('http://$ip/restaurant',
-    //     options: Options(headers: {'authorization': 'Bearer $accessToken'}));
-
-    // return resp.data['data'];
+  void scrollListener() {
+    if (controller.offset > controller.position.maxScrollExtent - 300) {
+      ref.read(restaurantProvider.notifier).paginate(fetchMore: true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: FutureBuilder<List<RestaurantModel>>(
-            future: paginateRestaurant(),
-            builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
-              // print(snapshot.error);
-              // print(snapshot.data);
-              if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+    final data = ref.watch(restaurantProvider);
 
-              return ListView.separated(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final item = snapshot.data![index];
+    if (data is CursorPaginationLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-                  // final pItem = RestaurantModel.fromJson(item);
+    if (data is CursorPaginationError) {
+      return Center(
+        child: Text(data.err),
+      );
+    }
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => RestaurantDetailScreen(id: item.id),
-                        ),
-                      );
-                    },
-                    child: RestaurantCard.fromModel(model: item),
-                  );
+    final cp = data as CursorPagination;
 
-                  // final pItem = RestaurantModel(
-                  //   id: item['id'],
-                  //   name: item['name'],
-                  //   thumbUrl: 'http://$ip${item['thumbUrl']}',
-                  //   tags: List<String>.from(item['tags']),
-                  //   priceRange: RestaurantPriceRange.values
-                  //       .firstWhere((e) => e.name == item['priceRange']),
-                  //   // priceRange: item['priceRange'],
-                  //   ratings: item['ratings'],
-                  //   ratingCount: item['ratingsCount'],
-                  //   deliveryTime: item['deliveryTime'],
-                  //   deliveryFee: item['deliveryFee'],
-                  // );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: ListView.separated(
+        controller: controller,
+        itemCount: cp.data.length + 1,
+        itemBuilder: (context, index) {
+          if (index == cp.data.length) {
+            return Center(
+              child: cp.meta.hasMore
+                  ? CircularProgressIndicator()
+                  : Text('No More Data'),
+            );
+          }
 
-                  // return RestaurantCard(
-                  //   image: Image.network(
-                  //     pItem.thumbUrl,
-                  //     fit: BoxFit.cover,
-                  //   ),
-                  //   name: pItem.name,
-                  //   tags: pItem.tags,
-                  //   ratingsCount: pItem.ratingCount,
-                  //   deliveryTime: pItem.deliveryTime,
-                  //   deliveryFee: pItem.deliveryFee,
-                  //   ratings: pItem.ratings,
-                  // );
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 16.0);
-                },
+          final item = cp.data[index];
+
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => RestaurantDetailScreen(id: item.id),
+                ),
               );
             },
-          ),
-        ),
+            child: RestaurantCard.fromModel(model: item),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const SizedBox(height: 16.0);
+        },
       ),
     );
   }

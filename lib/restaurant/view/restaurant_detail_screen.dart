@@ -8,8 +8,9 @@ import 'package:cofac_lv2/product/component/product_card.dart';
 import 'package:cofac_lv2/restaurant/component/restaurant_card.dart';
 import 'package:cofac_lv2/restaurant/model/restaurant_detail_model.dart';
 import 'package:cofac_lv2/restaurant/model/restaurant_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantDetailScreen extends StatelessWidget {
+class RestaurantDetailScreen extends ConsumerWidget {
   //final RestaurantModel model;
   final String id;
 
@@ -18,46 +19,19 @@ class RestaurantDetailScreen extends StatelessWidget {
     super.key,
   });
 
-  Future<RestaurantDetailModel> getRestaurantDetail() async {
-    final dio = Dio();
-
-    dio.interceptors.add(CustomInterceptor(storage: storage));
-
-    final restaurantRepository =
-        RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
-
-    return restaurantRepository.getRestaurantDetail(id: id);
-
-    // final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-
-    // final resp = await dio.get(
-    //   'http://$ip/restaurant/${id}',
-    //   options: Options(
-    //     headers: {'authorization': 'Bearer $accessToken'},
-    //   ),
-    // );
-
-    // return resp.data;
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DefaultLayout(
       title: '불타는 떡볶이',
       child: FutureBuilder<RestaurantDetailModel>(
-        future: getRestaurantDetail(),
+        future:
+            ref.watch(restaurantRepositoryProvider).getRestaurantDetail(id: id),
         builder: (context, AsyncSnapshot<RestaurantDetailModel> snapshot) {
-          // final restaurantDetailModel = RestaurantDetailModel.fromJson(snapshot.data);
-
-          // print(snapshot.data);
-
           if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-
-          // final item = RestaurantDetailModel.fromJson(snapshot.data!);
 
           return CustomScrollView(
             slivers: [
