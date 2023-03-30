@@ -1,5 +1,7 @@
 import 'package:cofac_lv2/common/model/cursor_pagination_model.dart';
+import 'package:cofac_lv2/common/utils/pagination_utils.dart';
 import 'package:cofac_lv2/restaurant/provider/restaurant_provider.dart';
+import 'package:cofac_lv2/restaurant/provider/restaurant_rating_provider.dart';
 import 'package:cofac_lv2/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:cofac_lv2/restaurant/component/restaurant_card.dart';
@@ -21,21 +23,33 @@ class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
   void initState() {
     super.initState();
 
-    controller.addListener(scrollListener);
+    // controller.addListener(scrollListener);
+    controller.addListener(() => PaginationUtils.scrollListener(
+          controller: controller,
+          provider: ref.read(restaurantProvider.notifier),
+        ));
   }
 
-  void scrollListener() {
-    if (controller.offset > controller.position.maxScrollExtent - 300) {
-      ref.read(restaurantProvider.notifier).paginate(fetchMore: true);
-    }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+
+    super.dispose();
   }
+
+  // void scrollListener() {
+  //   if (controller.offset > controller.position.maxScrollExtent - 300) {
+  //     ref.read(restaurantProvider.notifier).paginate(fetchMore: true);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(restaurantProvider);
 
     if (data is CursorPaginationLoading) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -57,8 +71,8 @@ class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
           if (index == cp.data.length) {
             return Center(
               child: cp.meta.hasMore
-                  ? CircularProgressIndicator()
-                  : Text('No More Data'),
+                  ? const CircularProgressIndicator()
+                  : const Text('No More Data'),
             );
           }
 

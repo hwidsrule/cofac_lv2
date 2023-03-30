@@ -1,3 +1,4 @@
+import 'package:cofac_lv2/common/model/model_with_id.dart';
 import 'package:cofac_lv2/common/utils/data_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 // import 'package:cofac_lv2/common/const/data.dart';
@@ -11,7 +12,8 @@ enum RestaurantPriceRange {
 }
 
 @JsonSerializable()
-class RestaurantModel {
+class RestaurantModel implements IModelWithId {
+  @override
   final String id;
   final String name;
   @JsonKey(fromJson: DataUtils.strToUrl)
