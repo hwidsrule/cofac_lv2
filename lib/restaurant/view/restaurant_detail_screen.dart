@@ -40,10 +40,22 @@ class _RestaurantDetailScreenState
     super.initState();
     ref.read(restaurantProvider.notifier).getRestaurantDetail(id: widget.id);
 
-    controller.addListener(() => PaginationUtils.scrollListener(
-          controller: controller,
-          provider: ref.read(restaurantRatingProvider(widget.id).notifier),
-        ));
+    controller.addListener(_listener);
+  }
+
+  void _listener() {
+    PaginationUtils.scrollListener(
+      controller: controller,
+      provider: ref.read(restaurantRatingProvider(widget.id).notifier),
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.removeListener(_listener);
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,7 +72,7 @@ class _RestaurantDetailScreenState
     }
 
     return DefaultLayout(
-      title: '불타는 떡볶이',
+      title: state.name,
       child: CustomScrollView(
         controller: controller,
         slivers: [
@@ -151,7 +163,7 @@ class _RestaurantDetailScreenState
     );
   }
 
-  SliverPadding renderProduct({required List<ProductModel> model}) {
+  SliverPadding renderProduct({required List<RestaurantProductModel> model}) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
@@ -159,7 +171,8 @@ class _RestaurantDetailScreenState
           (context, index) {
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: ProductCard(model: model[index]),
+              child:
+                  ProductCard.fromRestaurantProductModel(model: model[index]),
             );
           },
           childCount: model.length,

@@ -42,24 +42,4 @@ class RestaurantModel implements IModelWithId {
       _$RestaurantModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$RestaurantModelToJson(this);
-
-  // static int strToInt(String value) {
-  //   return int.parse(value);
-  // }
-
-  // factory RestaurantModel.fromJson({required Map<String, dynamic> jSon}) {
-  //   return RestaurantModel(
-  //     id: jSon['id'],
-  //     name: jSon['name'],
-  //     thumbUrl: 'http://$ip${jSon['thumbUrl']}',
-  //     tags: List<String>.from(jSon['tags']),
-  //     priceRange: RestaurantPriceRange.values
-  //         .firstWhere((e) => e.name == jSon['priceRange']),
-  //     // priceRange: item['priceRange'],
-  //     ratings: jSon['ratings'],
-  //     ratingCount: jSon['ratingsCount'],
-  //     deliveryTime: jSon['deliveryTime'],
-  //     deliveryFee: jSon['deliveryFee'],
-  //   );
-  // }
 }

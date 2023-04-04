@@ -1,3 +1,4 @@
+import 'package:cofac_lv2/product/view/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cofac_lv2/common/const/colors.dart';
 import 'package:cofac_lv2/common/layout/default_layout.dart';
@@ -76,7 +77,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         children: [
           // Center(child: Container(child: Text('홈'))),
           RestaurantScreen(),
-          Center(child: Container(child: Text('음식'))),
+          ProductScreen(),
+          //Center(child: Container(child: Text('음식'))),
           Center(child: Container(child: Text('주문'))),
           Center(child: Container(child: Text('프로필'))),
         ],

@@ -4,6 +4,7 @@ import 'package:cofac_lv2/common/provider/pagination_provider.dart';
 import 'package:cofac_lv2/restaurant/model/restaurant_model.dart';
 import 'package:cofac_lv2/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:collection/collection.dart';
 
 final restaurantDetailProvider = StateProvider.family<RestaurantModel?, String>(
   (ref, id) {
@@ -12,7 +13,7 @@ final restaurantDetailProvider = StateProvider.family<RestaurantModel?, String>(
     if (state is! CursorPagination) {
       return null;
     } else {
-      return state.data.firstWhere((element) => element.id == id);
+      return state.data.firstWhereOrNull((element) => element.id == id);
     }
   },
 );
@@ -48,10 +49,19 @@ class RestaurantStateNotifier
 
     final detail = await repository.getRestaurantDetail(id: id);
 
-    state = pState.copyWith(
-      data: pState.data
-          .map<RestaurantModel>((e) => e.id == id ? detail : e)
-          .toList(),
-    );
+    if (pState.data.where((element) => element.id == id).isEmpty) {
+      state = pState.copyWith(
+        data: <RestaurantModel>[
+          ...pState.data,
+          detail,
+        ],
+      );
+    } else {
+      state = pState.copyWith(
+        data: pState.data
+            .map<RestaurantModel>((e) => e.id == id ? detail : e)
+            .toList(),
+      );
+    }
   }
 }
